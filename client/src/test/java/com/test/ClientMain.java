@@ -26,6 +26,7 @@ public class ClientMain {
 	{
 		STest sTest= BeanFactory.getInstance().getService(STest.class);
 		sTest.test("s","sd");
+		System.out.println(1);
 
 
 
