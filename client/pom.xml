@@ -17,6 +17,16 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
+        <!--google的开源库 end-->
+
+        <!--junit的开源库 start-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <!--junit的开源库 end-->
     </dependencies>
 
 </project>
