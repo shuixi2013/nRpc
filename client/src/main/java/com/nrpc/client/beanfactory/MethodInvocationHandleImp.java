@@ -8,7 +8,7 @@ import java.lang.reflect.Proxy;
  *
  *
  *
- *
+ *构造接口的代理类
  *
  * <p>
  * 修改历史:                                                                                    &lt;br&gt;
@@ -23,7 +23,7 @@ import java.lang.reflect.Proxy;
  */
 public class MethodInvocationHandleImp implements InvocationHandler{
 
-	// 目标对象
+	// 目标接口
 	private Class<?>[] target;
 
 

@@ -1,5 +1,7 @@
 package com.nrpc.client.beanfactory;
 
+import com.nrpc.client.utils.BeanUtils;
+
 import java.lang.annotation.Annotation;
 
 /**
@@ -21,31 +23,40 @@ import java.lang.annotation.Annotation;
  */
 public class BeanFactory {
 
-	private BeanFactory()
-	{
+	private BeanFactory() {
 
 	}
-	public static BeanFactory getInstance()
-	{
-		  return BeanFactoryTemp.instance;
+
+	/**
+	 * 工厂模式的单例
+	 * @return
+	 */
+	public static BeanFactory getInstance() {
+		return BeanFactoryTemp.instance;
 	}
 
-	public <T> T getService(Class<T> t)
-	{
-		Class<T>[]src=new Class[1];
-		src[0]=t;
-		Annotation[] annotations=t.getAnnotations();
+	/**
+	 * 根据接口名称生成代理类
+	 * @param t
+	 * @param <T>
+	 * @return
+	 */
+	public <T> T getService(Class<T> t) throws Exception {
+		Class<T>[] src = new Class[1];
+		src[0] = t;
+		Annotation[] annotations = t.getAnnotations();
 
+		//注解不合法
+		if (!BeanUtils.checkClientAnnotion(annotations))
+			return null;
 
-		MethodInvocationHandleImp methodInvocationHandleImp=new MethodInvocationHandleImp(src);
-		T t1 = (T)methodInvocationHandleImp.getProxy();
+		MethodInvocationHandleImp methodInvocationHandleImp = new MethodInvocationHandleImp(src);
+		T t1 = (T) methodInvocationHandleImp.getProxy();
 
-		return t1 ;
+		return t1;
 	}
 
-
-	public static class BeanFactoryTemp
-	{
-		public static BeanFactory instance=new BeanFactory();
+	public static class BeanFactoryTemp {
+		public static BeanFactory instance = new BeanFactory();
 	}
 }

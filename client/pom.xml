@@ -27,6 +27,13 @@
             <scope>test</scope>
         </dependency>
         <!--junit的开源库 end-->
+
+        <dependency>
+        <groupId>lskrpc</groupId>
+        <artifactId>common</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 </project>

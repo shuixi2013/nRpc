@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class ClientMain {
 	@Test
-	public void doTest()
+	public void doTest()throws Exception
 	{
 		STest sTest= BeanFactory.getInstance().getService(STest.class);
 		sTest.test("s","sd");
