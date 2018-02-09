@@ -22,4 +22,14 @@ public class BeanConstants {
 	 * client annotation name
 	 */
 	public static final String CLIENT_INTERFACE_NAME="com.nrpc.client.annotations.NRPCInterface";
+
+	/**
+	 * 冒号
+	 */
+	public static final String COLON=":";
+
+	/**
+	 *
+	 */
+	public static final String NRPC="nrpc";
 }

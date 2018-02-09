@@ -1,6 +1,8 @@
 package com.nrpc.client.beanfactory;
 
+import com.google.common.base.Strings;
 import com.nrpc.client.utils.BeanUtils;
+import com.nrpc.client.vo.RequestStrategy;
 
 import java.lang.annotation.Annotation;
 
@@ -42,19 +44,53 @@ public class BeanFactory {
 	 * @return
 	 */
 	public <T> T getService(Class<T> t) throws Exception {
-		Class<T>[] src = new Class[1];
-		src[0] = t;
+
 		Annotation[] annotations = t.getAnnotations();
 
-		//注解不合法
-		if (!BeanUtils.checkClientAnnotion(annotations))
+
+		//解析产品、服务名称
+		String locationName=BeanUtils.parseAnnotion(annotations);
+
+		if(Strings.isNullOrEmpty(locationName))
 			return null;
 
-		MethodInvocationHandleImp methodInvocationHandleImp = new MethodInvocationHandleImp(src);
-		T t1 = (T) methodInvocationHandleImp.getProxy();
+		//使用默认的请求策略
+		return getService(t,new RequestStrategy());
 
-		return t1;
 	}
+
+	/**
+	 * 根据请求的接口生成代理类
+	 * @param t
+	 * @param strategy 请求策略
+	 * @param <T>
+	 * @return
+	 * @throws Exception
+	 */
+	public <T> T getService(Class<T> t,RequestStrategy strategy) throws Exception {
+		Annotation[] annotations = t.getAnnotations();
+
+
+		//从注解上解析产品、服务名称
+		String locationName=BeanUtils.parseAnnotion(annotations);
+
+		if(Strings.isNullOrEmpty(locationName))
+			return null;
+
+
+		Class<T>[] src = new Class[1];
+		src[0] = t;
+		//生成代理类
+		MethodInvocationHandleImp methodInvocationHandleImp = new MethodInvocationHandleImp(src,locationName);
+
+		T proxy = (T) methodInvocationHandleImp.getProxy();
+
+		return proxy;
+
+
+	}
+
+
 
 	public static class BeanFactoryTemp {
 		public static BeanFactory instance = new BeanFactory();

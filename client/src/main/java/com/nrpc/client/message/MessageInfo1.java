@@ -17,7 +17,7 @@ package com.nrpc.client.message;
  * @version 1.0
  * @since JDK1.7
  */
-public class MessageInfo {
+public class MessageInfo1 {
 	public static void aVoid()
 	{
 

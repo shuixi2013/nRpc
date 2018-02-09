@@ -26,7 +26,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface NRPCInterface {
 
-	String name()default "";
+	/**
+	 * 服务名称
+	 * @return
+	 */
+	String productName()default "";
+
+	/**
+	 * 产品名称
+	 * @return
+	 */
+	String serviceName()default "";
+
 
 
 
