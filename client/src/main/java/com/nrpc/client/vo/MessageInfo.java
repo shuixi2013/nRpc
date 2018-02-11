@@ -70,7 +70,7 @@ public class MessageInfo implements LogHandler{
 
 		}catch (Exception e)
 		{
-			nrpcClientLogger.error("buildMessage error",e);
+			NRPC_CLIENT_LOGGER.error("buildMessage error",e);
 		}
 		return this;
 	}

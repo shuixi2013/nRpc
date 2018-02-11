@@ -58,7 +58,7 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 
 		if(socket==null)
 		{
-			nrpcClientLogger.info("nrpc get socket null");
+			NRPC_CLIENT_LOGGER.info("nrpc get socket null");
 			return null;
 		}
 
@@ -129,7 +129,7 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 			}
 		}catch (Exception e)
 		{
-			   nrpcClientLogger.error("get socket null",e);
+			   NRPC_CLIENT_LOGGER.error("get socket null",e);
 		}
 		return socket;
 	}
