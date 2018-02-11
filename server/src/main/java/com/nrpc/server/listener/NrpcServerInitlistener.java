@@ -31,6 +31,7 @@ import javax.servlet.ServletContextListener;
  */
 public class NrpcServerInitlistener implements ServletContextListener, LogHandler {
 	@Override public void contextInitialized(ServletContextEvent sce) {
+		System.out.println(1);
 		initServer();
 
 	}
