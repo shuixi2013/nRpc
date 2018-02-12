@@ -94,7 +94,7 @@ public class BeanUtils implements LogHandler {
 			oos.close();
 			bos.close();
 		} catch (IOException ex) {
-			nrpcClientLogger.error("toByteArray error",ex);
+			NRPC_CLIENT_LOGGER.error("toByteArray error",ex);
 		}
 		return bytes;
 	}

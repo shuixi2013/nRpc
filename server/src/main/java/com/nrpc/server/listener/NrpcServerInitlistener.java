@@ -2,12 +2,15 @@ package com.nrpc.server.listener;
 
 import com.nrpc.server.connect.SimpleChannelHandler;
 import com.nrpc.server.utils.LogHandler;
+import com.nrpc.server.utils.MethodFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -31,7 +34,14 @@ import javax.servlet.ServletContextListener;
  */
 public class NrpcServerInitlistener implements ServletContextListener, LogHandler {
 	@Override public void contextInitialized(ServletContextEvent sce) {
-		System.out.println(1);
+
+
+		// 这里不是通过依赖注入，而是直接从容器中拿
+		WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+
+		//将服务端注册的方法和被调用的bean关联起来
+		MethodFactory.init(ctx);
+
 		initServer();
 
 	}
