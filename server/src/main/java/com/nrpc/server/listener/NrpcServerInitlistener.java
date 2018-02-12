@@ -3,6 +3,7 @@ package com.nrpc.server.listener;
 import com.nrpc.server.connect.SimpleChannelHandler;
 import com.nrpc.server.utils.LogHandler;
 import com.nrpc.server.utils.MethodFactory;
+import com.nrpc.server.utils.PropertiesReaderUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -51,6 +52,9 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 		NRPC_SERVER_LOGGER.info("NrpcServerInitlistener  close");
 	}
 
+	/**
+	 * 初始化后端的netty服务
+	 */
 	public static void initServer()
 	{
 		//配置客户端的NIO线程组
@@ -62,9 +66,11 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 				.handler(new SimpleChannelHandler());
 
 
+
 		try {
+			String port= PropertiesReaderUtil.getStrFromBundle("nrpc.netty.port");
 			//发生异步连接操作
-			ChannelFuture f = b.connect("127.0.0.1", 8787).sync();
+			ChannelFuture f = b.connect("127.0.0.1", Integer.valueOf(port)).sync();
 
 			//等待客户端链路关闭
 			f.channel().closeFuture().sync();

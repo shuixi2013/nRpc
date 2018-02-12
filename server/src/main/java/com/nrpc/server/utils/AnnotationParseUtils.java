@@ -42,6 +42,7 @@ public class AnnotationParseUtils implements LogHandler{
 
 	/**
 	 * 从spring的容器里面获取注册的方法
+	 * 遍历容器找到所有的bean，遍历所有的bean找到nrpcService注解的方法。
 	 * @param ctx
 	 * @return
 	 */
