@@ -23,7 +23,7 @@ public class PropertiesReaderUtil {
 	/**
 	 * 基础配置位置
 	 */
-	public static final String BASE_CONFIG_URI="conf/nrpc/baseConfig";
+	public static final String BASE_CONFIG_URI="nrpc/baseConfig";
 
 
 	public static String getStrFromBundle(String key)

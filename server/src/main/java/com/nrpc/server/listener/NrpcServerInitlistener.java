@@ -43,7 +43,11 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 		//将服务端注册的方法和被调用的bean关联起来
 		MethodFactory.init(ctx);
 
-		initServer();
+		new Thread(new Runnable() {
+			@Override public void run() {
+				   initServer();
+			}
+		}).start();
 
 	}
 
@@ -70,7 +74,7 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 		try {
 			String port= PropertiesReaderUtil.getStrFromBundle("nrpc.netty.port");
 			//发生异步连接操作
-			ChannelFuture f = b.connect("127.0.0.1", Integer.valueOf(port)).sync();
+			ChannelFuture f = b.bind( Integer.valueOf(port)).sync();
 
 			//等待客户端链路关闭
 			f.channel().closeFuture().sync();
