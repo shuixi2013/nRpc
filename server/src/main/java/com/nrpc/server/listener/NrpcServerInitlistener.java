@@ -40,7 +40,7 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 		// 这里不是通过依赖注入，而是直接从容器中拿
 		WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
 
-		//将服务端注册的方法和被调用的bean关联起来
+		//将服务端注册的方法和被调用的bean关联起来，默认bean使用的spring中的bean容器管理起来
 		MethodFactory.init(ctx);
 
 		new Thread(new Runnable() {

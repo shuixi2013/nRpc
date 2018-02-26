@@ -101,7 +101,7 @@ public class BeanUtils implements LogHandler {
 
 	public static HostInfo getHostInfo(String locationName)
 	{
-		return new HostInfo();
+		return new HostInfo("127.0.0.1",8989);
 	}
 
 	/**
@@ -118,10 +118,32 @@ public class BeanUtils implements LogHandler {
 			ois.close();
 			bis.close();
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			NRPC_CLIENT_LOGGER.error("beanUtils toObject error",ex);
 		} catch (ClassNotFoundException ex) {
-			ex.printStackTrace();
+			NRPC_CLIENT_LOGGER.error("beanUtils ClassNotFoundException error", ex);
 		}
 		return obj;
+	}
+
+	/**
+	 * 打印方法栈，调试用到
+	 */
+	public static void printCurrentStackTrace() {
+		try {
+
+			StackTraceElement[] stackElements = Thread.currentThread().getStackTrace();
+
+			for (int i = 0; i < stackElements.length; i++) {
+				System.out.println(stackElements[i].getClassName());
+				if (stackElements[i].getFileName() != null)
+					System.out.println(stackElements[i].getFileName());
+				System.out.println(String.valueOf(stackElements[i].getLineNumber()));
+				System.out.println(stackElements[i].getMethodName());
+				System.out.println("-----------------------------------");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

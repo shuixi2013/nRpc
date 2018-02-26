@@ -77,11 +77,8 @@ public class BeanFactory {
 		if(Strings.isNullOrEmpty(locationName))
 			return null;
 
-
-		Class<T>[] src = new Class[1];
-		src[0] = t;
 		//生成代理类
-		MethodInvocationHandleImp methodInvocationHandleImp = new MethodInvocationHandleImp(src,locationName);
+		MethodInvocationHandleImp methodInvocationHandleImp = new MethodInvocationHandleImp(t,locationName);
 
 		T proxy = (T) methodInvocationHandleImp.getProxy();
 

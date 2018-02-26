@@ -1,5 +1,6 @@
 package com.nrpc.client.beanfactory;
 
+import com.google.common.base.Objects;
 import com.nrpc.client.connect.SocketPoolMap;
 import com.nrpc.client.connect.SocketPoolMap.SocketPool;
 import com.nrpc.client.constans.BeanConstants;
@@ -36,20 +37,27 @@ import java.net.Socket;
 public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 
 	// 目标接口
-	private Class<?>[] target;
+	private Class interfac;
 
 	/**
 	 * 服务位置名称
 	 */
 	private String locationName;
 
+	@Override public String toString() {
+		return Objects.toStringHelper(this).add("interfac", interfac).add("locationName", locationName).toString();
+	}
 
-	public MethodInvocationHandleImp(Class<?>[] target,String locationName) {
+	public MethodInvocationHandleImp(Class target,String locationName) {
 		super();
-		this.target = target;
+		this.interfac = target;
 		this.locationName=locationName;
 	}
 	@Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+	   	//proxy的equals、toString、hashCode方法默认会调用Invoke方法
+		if(args==null)
+			return null;
 
 		//根据请求策略选择联机的ip
 		HostInfo hostInfo=BeanUtils.getHostInfo(locationName);
@@ -58,13 +66,13 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 
 		if(socket==null)
 		{
-			NRPC_CLIENT_LOGGER.info("nrpc get socket null");
-			return null;
+			throw new Exception("socket conn");
 		}
 
 
 		return sendReq(method,args,socket);
 	}
+
 
 	/**
 	 * 发送请求
@@ -100,14 +108,14 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 	}
 
 	public Object getProxy() {
-		return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), target, this);
+		return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{interfac}, this);
 	}
 
 	/**
 	 * 根据hostInfo从连接池种获取连接
 	 * @param hostInfo
 	 */
-	private Socket getSocket(HostInfo hostInfo)
+	private Socket getSocket(HostInfo hostInfo) throws Exception
 	{
 		Socket socket=null;
 
@@ -120,16 +128,23 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 
 			//192.168.89.32:8898
 			String socketKey = stringBuilder.toString();
+
+			SocketPool socketPool=SocketPoolMap.instance.getPoolConcurrentHashMap().get(socketKey);
 			//may be bug here ,thread 1 and thread 2 find null ,and they all creat new SocketPool
-			if (SocketPoolMap.instance.getPoolConcurrentHashMap().get(socketKey) == null) {
-				SocketPool socketPool = new SocketPool(hostInfo);
+			if (socketPool == null) {
+				socketPool = new SocketPool(hostInfo);
 				SocketPoolMap.instance.getPoolConcurrentHashMap().put(socketKey, socketPool);
 
-				socket = SocketPoolMap.instance.getPoolConcurrentHashMap().get(socketKey).borrowObject();
+				socket = socketPool.borrowObject();
+			}
+			else
+			{
+			   socket=socketPool.borrowObject();
 			}
 		}catch (Exception e)
 		{
-			   NRPC_CLIENT_LOGGER.error("get socket null",e);
+			NRPC_CLIENT_LOGGER.error("get socket null",e);
+			throw new Exception(e);
 		}
 		return socket;
 	}

@@ -31,6 +31,12 @@ public class MessageInfo implements LogHandler{
 		return this.srcByte;
 	}
 
+	/**
+	 * 根据传入的方法名称和参数构造byte数组
+	 * @param methodName
+	 * @param args
+	 * @return
+	 */
 	public  MessageInfo buildMessage(String methodName,Object[]args)
 	{
 

@@ -1,5 +1,6 @@
 package com.nrpc.client.connect;
 
+import com.nrpc.client.utils.LogHandler;
 import com.nrpc.client.vo.HostInfo;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -42,7 +43,7 @@ public class SocketPoolMap {
 	/**
 	 * socket连接池
 	 */
-	public static class SocketPool {
+	public static class SocketPool implements LogHandler{
 		private GenericObjectPool<Socket> socketPool;
 
 
@@ -55,8 +56,17 @@ public class SocketPoolMap {
 			socketPool = new GenericObjectPool<Socket>(new SocketFactory(hostInfo), poolConfig);
 		}
 
-		public Socket borrowObject() throws Exception {
-			return socketPool.borrowObject();
+		public Socket borrowObject()throws Exception {
+			Socket socket=null;
+			try {
+				 socket = socketPool.borrowObject();
+			}catch (Exception e)
+			{
+				NRPC_CLIENT_LOGGER.error("SocketPool borrowObject error",e);
+				throw new Exception(e);
+
+			}
+			return socket;
 		}
 
 		public void returnObject(Socket socket) {

@@ -18,6 +18,11 @@ package com.nrpc.client.vo;
  * @since JDK1.7
  */
 public class HostInfo {
+	public HostInfo(String ip, Integer port) {
+		this.ip = ip;
+		this.port = port;
+	}
+
 	/**
 	 * ip地址
 	 */
