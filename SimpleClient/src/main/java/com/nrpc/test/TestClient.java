@@ -25,7 +25,7 @@ public class TestClient {
 	{
 
 		ClientService clientService= BeanFactory.getInstance().getService(ClientService.class);
-		clientService.doTest("a","bcdsada");
+		clientService.doTest("a","b");
 
 	}
 }
