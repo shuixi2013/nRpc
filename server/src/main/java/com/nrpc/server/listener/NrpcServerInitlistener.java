@@ -4,12 +4,12 @@ import com.nrpc.server.connect.SimpleChannelHandler;
 import com.nrpc.server.utils.LogHandler;
 import com.nrpc.server.utils.MethodFactory;
 import com.nrpc.server.utils.PropertiesReaderUtil;
-import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -63,18 +63,21 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 	{
 		//配置客户端的NIO线程组
 		EventLoopGroup group = new NioEventLoopGroup();
-		Bootstrap b = new Bootstrap();
-		b.group(group)
-				.channel(NioSocketChannel.class)
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		ServerBootstrap b = new ServerBootstrap();
+		b.group(group,workerGroup)
+				.channel(NioServerSocketChannel.class)
 				.option(ChannelOption.TCP_NODELAY, true)
-				.handler(new SimpleChannelHandler());
+				.option(ChannelOption.SO_BACKLOG, 1024)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+				.childHandler(new SimpleChannelHandler());
 
 
 
 		try {
 			String port= PropertiesReaderUtil.getStrFromBundle("nrpc.netty.port");
 			//发生异步连接操作
-			ChannelFuture f = b.bind( Integer.valueOf(port)).sync();
+			ChannelFuture f = b.bind(Integer.valueOf(port)).sync();
 
 			//等待客户端链路关闭
 			f.channel().closeFuture().sync();
