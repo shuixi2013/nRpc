@@ -11,7 +11,7 @@
 
         <dependency>
             <groupId>lskRpc</groupId>
-            <artifactId>server</artifactId>
+            <artifactId>lskRpc-server</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

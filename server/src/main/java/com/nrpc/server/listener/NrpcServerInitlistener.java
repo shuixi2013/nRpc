@@ -43,6 +43,7 @@ public class NrpcServerInitlistener implements ServletContextListener, LogHandle
 		//将服务端注册的方法和被调用的bean关联起来，默认bean使用的spring中的bean容器管理起来
 		MethodFactory.init(ctx);
 
+
 		new Thread(new Runnable() {
 			@Override public void run() {
 				   initServer();

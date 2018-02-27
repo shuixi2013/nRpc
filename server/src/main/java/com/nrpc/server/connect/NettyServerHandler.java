@@ -1,10 +1,16 @@
 package com.nrpc.server.connect;
 
+import com.google.common.collect.Maps;
+import com.nrpc.server.utils.CommonUtils;
 import com.nrpc.server.utils.LogHandler;
+import com.nrpc.server.vo.RequestMessageInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import okio.Buffer;
+
+import java.util.Map;
 
 /**
  *
@@ -28,11 +34,69 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 		ByteBuf buf = (ByteBuf) msg;
 		byte[] req = new byte[buf.readableBytes()];
 		buf.readBytes(req);
-		String body = new String(req, "UTF-8");
-		System.out.println("The time server receive order : " + body);
+		Map<String,String>stringStringMap= Maps.newHashMap();
+
+		RequestMessageInfo requestMessageInfo= parseMessage(req);
+
+		System.out.println("The time server receive order : " + requestMessageInfo.getMethodName());
 
 		ByteBuf resp = Unpooled.copiedBuffer("response code is 200".getBytes());
 		ctx.write(resp);
+	}
+
+	/**
+	 * 解析消息
+	 * |nrpc|methodLength|getDeviceId|2 args1Length|args1|args2Length|args2
+	 * @param bytes
+	 */
+	private RequestMessageInfo parseMessage(byte[]bytes)
+	{
+		RequestMessageInfo requestMessageInfo=new RequestMessageInfo();
+		Buffer buffer=new Buffer();
+		try {
+			buffer.write(bytes);
+
+			//跳过开头的nrpc
+			buffer.skip(4);
+
+			//方法名称长度
+			int methodNameLength=buffer.readByte();
+
+			byte[]methodBytes=buffer.readByteArray(methodNameLength);
+
+			String methodNameStr=new String(methodBytes);
+
+			//参数长度
+			int totalArgsLength=buffer.readByte();
+
+			Object[]argsObjArray=new Object[totalArgsLength];
+			//分别读取每个参数
+			for(int i=0;i<totalArgsLength;i++)
+			{
+				int argsLength=buffer.readByte();
+				byte[]argsBytes=buffer.readByteArray(argsLength);
+				//将byte反序列化为obj
+				Object object= CommonUtils.toObject(argsBytes);
+
+				argsObjArray[i]=object;
+			}
+
+			requestMessageInfo.setArgs(argsObjArray);
+			requestMessageInfo.setMethodName(methodNameStr);
+
+
+
+
+
+
+
+		}catch (Exception e)
+		{
+			NRPC_SERVER_LOGGER.error("",e);
+		}
+
+		return requestMessageInfo;
+
 	}
 
 	@Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
