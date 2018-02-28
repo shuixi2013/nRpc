@@ -69,8 +69,10 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 			throw new Exception("socket conn");
 		}
 
+		String[]strArray=locationName.split(BeanConstants.COLON);
 
-		return sendReq(method,args,socket);
+
+		return sendReq(strArray[2],method,args,socket);
 	}
 
 
@@ -82,14 +84,14 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 	 * @return
 	 * @throws Exception
 	 */
-	public Object sendReq(Method method,Object[]args,Socket socket)throws Exception
+	public Object sendReq(String interfaceName,Method method,Object[]args,Socket socket)throws Exception
 	{
 		BufferedSink sink= Okio.buffer(Okio.sink(socket));
 		BufferedSource source= Okio.buffer(Okio.source(socket));
 
 		//构造消息
 		MessageInfo messageInfo=new MessageInfo();
-		messageInfo.buildMessage(method.getName(),args);
+		messageInfo.buildMessage(interfaceName,method.getName(),args);
 
 		//发送消息
 		sink.write(messageInfo.getSrcByte());

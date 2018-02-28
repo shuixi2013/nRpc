@@ -19,7 +19,7 @@ import com.nrpc.client.annotations.NRPCInterface;
  * @version 1.0
  * @since JDK1.7
  */
-@NRPCInterface(productName = "sankuai",serviceName = "dache")
+@NRPCInterface(productName = "sankuai",serviceName = "dache",interfaceName = "test")
 public interface ClientService {
 	public void doTest(String name,String email);
 }

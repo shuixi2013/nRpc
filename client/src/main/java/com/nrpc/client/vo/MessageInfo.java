@@ -37,7 +37,7 @@ public class MessageInfo implements LogHandler{
 	 * @param args
 	 * @return
 	 */
-	public  MessageInfo buildMessage(String methodName,Object[]args)
+	public  MessageInfo buildMessage(String interfaceName,String methodName,Object[]args)
 	{
 
 		BufferedSink sink = new Buffer();
@@ -45,6 +45,17 @@ public class MessageInfo implements LogHandler{
 
 			//消息头写入nrpc
 			sink.write(BeanConstants.NRPC.getBytes());
+
+			byte[] interfaceNameBytes = interfaceName.getBytes();
+
+			int interfaceNameLength=interfaceNameBytes.length;
+
+			//写入接口名称的长度
+			sink.writeByte(interfaceNameLength);
+
+			//写入接口名称
+			sink.write(interfaceNameBytes);
+
 
 			byte[] methodNameBytes = methodName.getBytes();
 

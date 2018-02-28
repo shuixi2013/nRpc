@@ -71,7 +71,7 @@ public class BeanFactory {
 		Annotation[] annotations = t.getAnnotations();
 
 
-		//从注解上解析产品、服务名称
+		//从注解上解析产品、服务名称、接口名称
 		String locationName=BeanUtils.parseAnnotion(annotations);
 
 		if(Strings.isNullOrEmpty(locationName))
