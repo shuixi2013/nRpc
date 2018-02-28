@@ -2,6 +2,7 @@ package com.nrpc.server.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.nrpc.server.annotations.NRPCInterfaceImpl;
 import com.nrpc.server.annotations.NRPCService;
 import com.nrpc.server.constants.CommonConstants;
 import com.nrpc.server.vo.MethodProvider;
@@ -88,6 +89,13 @@ public class AnnotationParseUtils implements LogHandler{
 		List<MethodProvider>methodProviderList = Lists.newArrayList();
 		MethodProvider methodProvider=null;
 
+		//在类实现上找到interfaceName
+		String interfaceName=findInterfaceName(object.getClass());
+
+		if(Strings.isNullOrEmpty(interfaceName))
+			return methodProviderList;
+
+
 		Method[]methods=object.getClass().getMethods();
 
 		for(Method item:methods)
@@ -106,11 +114,15 @@ public class AnnotationParseUtils implements LogHandler{
 						return null;
 					else
 					{
+						StringBuilder stringBuilder=new StringBuilder();
+						stringBuilder.append(interfaceName);
+						stringBuilder.append(CommonConstants.COLON);
+						stringBuilder.append(nrpcService.serviceName());
 
 						methodProvider=new MethodProvider();
 						methodProvider.setMethod(item);
 						methodProvider.setObject(object);
-						methodProvider.setServiceName(nrpcService.serviceName());
+						methodProvider.setServiceName(stringBuilder.toString());
 						methodProviderList.add(methodProvider);
 					}
 				}
@@ -118,6 +130,29 @@ public class AnnotationParseUtils implements LogHandler{
 		}
 
 		return methodProviderList;
+	}
+
+
+	public static String findInterfaceName(Class srcClass)
+	{
+		String result=null;
+
+		for(Annotation annotation:srcClass.getAnnotations())
+		{
+			//从方法的注解上找到nrpcService的注解
+			if(annotation.annotationType().getName().equals(CommonConstants.CLIENT_INTERFACE_IMPL_NAME)) {
+
+				NRPCInterfaceImpl nrpcService=(NRPCInterfaceImpl)annotation;
+
+				//检测注册的名称是否为空
+				if(Strings.isNullOrEmpty(nrpcService.interfaceName()))
+					return null;
+
+				result=nrpcService.interfaceName();
+				return result;
+			}
+		}
+		return result;
 	}
 	public static List<Class<?>> findContext()
 	{

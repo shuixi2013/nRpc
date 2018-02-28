@@ -1,6 +1,7 @@
 package com.nrpc.server.connect;
 
 import com.google.common.collect.Maps;
+import com.nrpc.server.constants.CommonConstants;
 import com.nrpc.server.utils.CommonUtils;
 import com.nrpc.server.utils.LogHandler;
 import com.nrpc.server.vo.RequestMessageInfo;
@@ -59,12 +60,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 			//跳过开头的nrpc
 			buffer.skip(4);
 
-			//方法名称长度
-			int methodNameLength=buffer.readByte();
-
-			byte[]methodBytes=buffer.readByteArray(methodNameLength);
-
-			String methodNameStr=new String(methodBytes);
+		   	String methodName=parseMethodName(buffer);
 
 			//参数长度
 			int totalArgsLength=buffer.readByte();
@@ -82,7 +78,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 			}
 
 			requestMessageInfo.setArgs(argsObjArray);
-			requestMessageInfo.setMethodName(methodNameStr);
+			requestMessageInfo.setMethodName(methodName);
 
 
 
@@ -97,6 +93,28 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 
 		return requestMessageInfo;
 
+	}
+	public String parseMethodName(Buffer buffer)throws Exception
+	{
+		//方法名称长度
+		int interfaceLength=buffer.readByte();
+
+		byte[]interfaceBytes=buffer.readByteArray(interfaceLength);
+
+		String interfaceStr=new String(interfaceBytes);
+
+		//方法名称长度
+		int methodNameLength=buffer.readByte();
+
+		byte[]methodBytes=buffer.readByteArray(methodNameLength);
+
+		String methodNameStr=new String(methodBytes);
+
+		StringBuilder stringBuilder=new StringBuilder();
+		stringBuilder.append(interfaceStr);
+		stringBuilder.append(CommonConstants.COLON);
+		stringBuilder.append(methodNameStr);
+		return stringBuilder.toString();
 	}
 
 	@Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

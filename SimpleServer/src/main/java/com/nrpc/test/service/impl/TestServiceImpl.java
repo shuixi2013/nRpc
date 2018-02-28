@@ -1,5 +1,6 @@
 package com.nrpc.test.service.impl;
 
+import com.nrpc.server.annotations.NRPCInterfaceImpl;
 import com.nrpc.server.annotations.NRPCService;
 import com.nrpc.test.service.TestService;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@NRPCInterfaceImpl(interfaceName = "test")
 public class TestServiceImpl implements TestService {
 
 	@NRPCService(serviceName = "doTest")

@@ -19,5 +19,19 @@ package com.nrpc.server.constants;
  */
 public class CommonConstants {
 
+
+	/**
+	 * 冒号
+	 */
+	public static final String COLON=":";
+
+	/**
+	 * 方法注解的类位置
+	 */
 	public static final String CLIENT_INTERFACE_NAME="com.nrpc.server.annotations.NRPCService";
+
+	/**
+	 * 类注解的类位置
+	 */
+		public static final String CLIENT_INTERFACE_IMPL_NAME="com.nrpc.server.annotations.NRPCInterfaceImpl";
 }
