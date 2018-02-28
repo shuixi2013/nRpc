@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
 	@NRPCService(serviceName = "doTest")
-	@Override public void doTest(String name, String email) {
+	@Override public String doTest(String name, String email) {
+		return "doTest success";
 
 	}
 	@NRPCService(serviceName = "doTest2")
