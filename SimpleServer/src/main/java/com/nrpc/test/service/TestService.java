@@ -18,6 +18,6 @@ package com.nrpc.test.service;
  * @since JDK1.7
  */
 public interface TestService {
-	public void doTest(String name,String email);
+	public String doTest(String name,String email);
 	public String doTest2(String name,String email);
 }

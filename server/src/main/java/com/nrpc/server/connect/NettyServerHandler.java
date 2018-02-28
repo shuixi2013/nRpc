@@ -4,6 +4,9 @@ import com.google.common.collect.Maps;
 import com.nrpc.server.constants.CommonConstants;
 import com.nrpc.server.utils.CommonUtils;
 import com.nrpc.server.utils.LogHandler;
+import com.nrpc.server.utils.MethodFactory;
+import com.nrpc.server.vo.MethodProvider;
+import com.nrpc.server.vo.NRPCServerResponse;
 import com.nrpc.server.vo.RequestMessageInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -11,6 +14,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import okio.Buffer;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -30,18 +35,22 @@ import java.util.Map;
  * @version 1.0
  * @since JDK1.7
  */
-public class NettyServerHandler extends ChannelInboundHandlerAdapter implements LogHandler{
+public class NettyServerHandler extends ChannelInboundHandlerAdapter implements LogHandler {
 	@Override public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		ByteBuf buf = (ByteBuf) msg;
 		byte[] req = new byte[buf.readableBytes()];
 		buf.readBytes(req);
-		Map<String,String>stringStringMap= Maps.newHashMap();
+		Map<String, String> stringStringMap = Maps.newHashMap();
 
-		RequestMessageInfo requestMessageInfo= parseMessage(req);
+		//解析调用的方法，调用的参数
+		RequestMessageInfo requestMessageInfo = parseMessage(req);
 
-		System.out.println("The time server receive order : " + requestMessageInfo.getMethodName());
+		//执行调用
+		NRPCServerResponse result= doExecute(requestMessageInfo);
 
-		ByteBuf resp = Unpooled.copiedBuffer("response code is 200".getBytes());
+		NRPC_SERVER_LOGGER.info("NRPCServerResponse  code is :"+result.getCode());
+
+		ByteBuf resp = Unpooled.copiedBuffer(CommonUtils.toByteArray(result));
 		ctx.write(resp);
 	}
 
@@ -50,50 +59,83 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 	 * |nrpc|methodLength|getDeviceId|2 args1Length|args1|args2Length|args2
 	 * @param bytes
 	 */
-	private RequestMessageInfo parseMessage(byte[]bytes)
-	{
-		RequestMessageInfo requestMessageInfo=new RequestMessageInfo();
-		Buffer buffer=new Buffer();
+	private RequestMessageInfo parseMessage(byte[] bytes) {
+		RequestMessageInfo requestMessageInfo = new RequestMessageInfo();
+		Buffer buffer = new Buffer();
 		try {
 			buffer.write(bytes);
 
 			//跳过开头的nrpc
 			buffer.skip(4);
 
-		   	String methodName=parseMethodName(buffer);
+			String methodName = parseMethodName(buffer);
 
 			//参数长度
-			int totalArgsLength=buffer.readByte();
+			int totalArgsLength = buffer.readByte();
 
-			Object[]argsObjArray=new Object[totalArgsLength];
+			Object[] argsObjArray = new Object[totalArgsLength];
 			//分别读取每个参数
-			for(int i=0;i<totalArgsLength;i++)
-			{
-				int argsLength=buffer.readByte();
-				byte[]argsBytes=buffer.readByteArray(argsLength);
+			for (int i = 0; i < totalArgsLength; i++) {
+				int argsLength = buffer.readByte();
+				byte[] argsBytes = buffer.readByteArray(argsLength);
 				//将byte反序列化为obj
-				Object object= CommonUtils.toObject(argsBytes);
+				Object object = CommonUtils.toObject(argsBytes);
 
-				argsObjArray[i]=object;
+				argsObjArray[i] = object;
 			}
 
 			requestMessageInfo.setArgs(argsObjArray);
 			requestMessageInfo.setMethodName(methodName);
 
-
-
-
-
-
-
-		}catch (Exception e)
-		{
-			NRPC_SERVER_LOGGER.error("",e);
+		} catch (Exception e) {
+			NRPC_SERVER_LOGGER.error("", e);
 		}
 
 		return requestMessageInfo;
 
 	}
+
+	/**
+	 * 通过反射调用方法
+	 * @param requestMessageInfo
+	 * @return
+	 * @throws Exception
+	 */
+	public NRPCServerResponse doExecute(RequestMessageInfo requestMessageInfo)
+	{
+		NRPCServerResponse nrpcServerResponse=new NRPCServerResponse();
+		try {
+			String methodName = requestMessageInfo.getMethodName();
+			//获取方法执行的method,Obj
+			MethodProvider methodProvider = MethodFactory.methodMap.get(methodName);
+
+			if (methodProvider == null) {
+				nrpcServerResponse.setCode(10);
+				return nrpcServerResponse;
+			}
+
+			Method method = methodProvider.getMethod();
+			Object object = methodProvider.getObject();
+			Object result = method.invoke(object, requestMessageInfo.getArgs());
+
+			if(!(result instanceof Serializable))
+				nrpcServerResponse.setCode(20);
+
+			nrpcServerResponse.setBody(result);
+		}catch (Exception e)
+		{
+			NRPC_SERVER_LOGGER.error("doExecute error",e);
+		}
+
+		return nrpcServerResponse;
+	}
+
+	/**
+	 * 从byte[]中解析方法名称,格式是interfaceName:methodName
+	 * @param buffer
+	 * @return
+	 * @throws Exception
+	 */
 	public String parseMethodName(Buffer buffer)throws Exception
 	{
 		//方法名称长度
@@ -126,5 +168,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter implements 
 
 	@Override public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		super.channelReadComplete(ctx);
+		ctx.flush();
 	}
 }
