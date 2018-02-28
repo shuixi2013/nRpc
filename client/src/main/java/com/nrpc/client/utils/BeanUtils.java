@@ -54,6 +54,7 @@ public class BeanUtils implements LogHandler {
 				//获得产品和服务方法
 				String productName=nrpcInterface.productName();
 				String serviceName=nrpcInterface.serviceName();
+				String interfaceName=nrpcInterface.interfaceName();
 
 				if(Strings.isNullOrEmpty(productName)||Strings.isNullOrEmpty(serviceName))
 					throw new Exception("productName or serviceName is null");
@@ -62,6 +63,8 @@ public class BeanUtils implements LogHandler {
 				stringBuilder.append(productName);
 				stringBuilder.append(BeanConstants.COLON);
 				stringBuilder.append(serviceName);
+				stringBuilder.append(BeanConstants.COLON);
+				stringBuilder.append(interfaceName);
 
 				return stringBuilder.toString();
 

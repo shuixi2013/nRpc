@@ -38,6 +38,12 @@ public @interface NRPCInterface {
 	 */
 	String serviceName()default "";
 
+	/**
+	 * 接口名称
+	 * @return
+	 */
+	String interfaceName()default "";
+
 
 
 
