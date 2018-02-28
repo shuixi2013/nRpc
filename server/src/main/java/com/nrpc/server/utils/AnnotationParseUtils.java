@@ -1,6 +1,7 @@
 package com.nrpc.server.utils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.nrpc.server.annotations.NRPCService;
 import com.nrpc.server.constants.CommonConstants;
 import com.nrpc.server.vo.MethodProvider;
@@ -58,14 +59,16 @@ public class AnnotationParseUtils implements LogHandler{
 			Object beanObj=ctx.getBean(name);
 
 			//遍历所有对象的方法，找到nrpc注解的方法
-			MethodProvider methodProvider=findNrpcAnnnotationMehod(beanObj);
+			List<MethodProvider> methodProviderList=findNrpcAnnnotationMehod(beanObj);
 
-			if(methodProvider!=null)
+			if(methodProviderList.size()!=0)
 			{
+				for(MethodProvider methodProvider:methodProviderList) {
 
-				String key=methodProvider.getServiceName();
+					String key = methodProvider.getServiceName();
 
-				methodMap.put(key,methodProvider);
+					methodMap.put(key, methodProvider);
+				}
 			}
 		}
 
@@ -80,8 +83,9 @@ public class AnnotationParseUtils implements LogHandler{
 	 * @param object
 	 * @return
 	 */
-	public static MethodProvider findNrpcAnnnotationMehod(Object object)
+	public static List<MethodProvider> findNrpcAnnnotationMehod(Object object)
 	{
+		List<MethodProvider>methodProviderList = Lists.newArrayList();
 		MethodProvider methodProvider=null;
 
 		Method[]methods=object.getClass().getMethods();
@@ -107,13 +111,13 @@ public class AnnotationParseUtils implements LogHandler{
 						methodProvider.setMethod(item);
 						methodProvider.setObject(object);
 						methodProvider.setServiceName(nrpcService.serviceName());
-						return methodProvider;
+						methodProviderList.add(methodProvider);
 					}
 				}
 			}
 		}
 
-		return null;
+		return methodProviderList;
 	}
 	public static List<Class<?>> findContext()
 	{
