@@ -2,6 +2,8 @@ package com.nrpc.test.service;
 
 import com.nrpc.client.annotations.NRPCInterface;
 
+
+
 /**
  *
  *
@@ -21,5 +23,5 @@ import com.nrpc.client.annotations.NRPCInterface;
  */
 @NRPCInterface(productName = "sankuai",serviceName = "dache",interfaceName = "test")
 public interface ClientService {
-	public void doTest(String name,String email);
+	public NRPCS doTest(String name,String email);
 }

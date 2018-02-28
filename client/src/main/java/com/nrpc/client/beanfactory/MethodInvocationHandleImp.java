@@ -97,11 +97,12 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 		sink.write(messageInfo.getSrcByte());
 		sink.flush();
 
-		source.skip(4);
+		source.exhausted();
 
-		int byteLength=source.readByte();
 
-		byte[]response=source.readByteArray(byteLength);
+
+
+		byte[]response=source.buffer().readByteArray();
 
 		return BeanUtils.toObject(response);
 
