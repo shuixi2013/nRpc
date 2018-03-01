@@ -20,7 +20,7 @@ import com.nrpc.server.vo.NRPCServerResponse;
  * @version 1.0
  * @since JDK1.7
  */
-@NRPCInterface(productName = "sankuai",serviceName = "dache",interfaceName = "test")
+@NRPCInterface(productName = "didi",serviceName = "dache",interfaceName = "test")
 public interface ClientService {
 	public NRPCServerResponse doTest(String name,String email);
 }
