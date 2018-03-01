@@ -24,9 +24,17 @@ public class PropertiesReaderUtil {
 	 * 基础配置位置
 	 */
 	public static final String BASE_CONFIG_URI="nrpc/baseConfig";
+	/**
+	 * zk集群的相关配置
+	 */
+	public static final String ZK_CONFIG_URI="nrpc/zkConfig";
 
 
 	public static String getStrFromBundle(String key)
+	{
+		return    getStrFromBundle(key,BASE_CONFIG_URI);
+	}
+	public static String getStrFromBundle(String key,String path)
 	{
 		String configValue=ResourceBundle.getBundle(BASE_CONFIG_URI).getString(key);
 
