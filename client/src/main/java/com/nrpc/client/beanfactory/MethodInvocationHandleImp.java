@@ -60,7 +60,7 @@ public class MethodInvocationHandleImp implements InvocationHandler,LogHandler{
 			return null;
 
 		//根据请求策略选择联机的ip
-		HostInfo hostInfo=BeanUtils.getHostInfo(locationName);
+		HostInfo hostInfo= BeanUtils.getHostInfo(locationName);
 
 		Socket socket=getSocket(hostInfo);
 
